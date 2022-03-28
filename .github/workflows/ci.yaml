@@ -60,16 +60,21 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Generate requirement files
-        run: pip install packaging && python .support/generate.py && cp .support/dist/* .
+        run: |
+          python -m pip install pip --upgrade
+          pip install packaging
+          python .support/generate.py
+          cp .support/dist/* .
 
       - name: Setup development version test environment
         run: |
           python -m venv venv
+          venv/${{ matrix.bin}}/python3 -m pip install pip wheel --upgrade
           venv/${{ matrix.bin }}/pip install . --no-deps
           venv/${{ matrix.bin }}/pip install -r dev-reqs.txt -r dev-d-reqs.txt -r dev-colorama-reqs.txt -r dev-test-reqs.txt
 
       - name: Run test suite w/ development versions
         run: |
-          venv/${{ matrix.bin }}/python -m pytest tests -v --run-optional no_jupyter
+          venv/${{ matrix.bin }}/python3 -m pytest tests -v --run-optional no_jupyter
           venv/${{ matrix.bin }}/pip install -r dev-jupyter-reqs.txt
-          venv/${{ matrix.bin }}/python -m pytest tests -v --run-optional jupyter -m jupyter
+          venv/${{ matrix.bin }}/python3 -m pytest tests -v --run-optional jupyter -m jupyter
