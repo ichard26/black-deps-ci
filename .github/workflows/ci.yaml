@@ -24,10 +24,13 @@ jobs:
         include:
           - os: ubuntu
             bin: 'bin'
+            python_bin: 'python3'
           - os: macos
             bin: 'bin'
+            python_bin: 'python3'
           - os: windows
             bin: 'Scripts'
+            python_bin: 'python.exe'
 
     defaults:
       run:
@@ -69,12 +72,12 @@ jobs:
       - name: Setup development version test environment
         run: |
           python -m venv venv
-          venv/${{ matrix.bin}}/python3 -m pip install pip wheel --upgrade
+          venv/${{ matrix.bin }}/${{ matrix.python_bin }} -m pip install pip wheel --upgrade
           venv/${{ matrix.bin }}/pip install . --no-deps
           venv/${{ matrix.bin }}/pip install -r dev-reqs.txt -r dev-d-reqs.txt -r dev-colorama-reqs.txt -r dev-test-reqs.txt
 
       - name: Run test suite w/ development versions
         run: |
-          venv/${{ matrix.bin }}/python3 -m pytest tests -v --run-optional no_jupyter
+          venv/${{ matrix.bin }}/${{ matrix.python_bin }} -m pytest tests -v --run-optional no_jupyter
           venv/${{ matrix.bin }}/pip install -r dev-jupyter-reqs.txt
-          venv/${{ matrix.bin }}/python3 -m pytest tests -v --run-optional jupyter -m jupyter
+          venv/${{ matrix.bin }}/${{ matrix.python_bin }} -m pytest tests -v --run-optional jupyter -m jupyter

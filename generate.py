@@ -7,16 +7,22 @@ SRC_DIR = THIS_DIR / "src"
 DIST_DIR = THIS_DIR / "dist"
 
 overrides = {
-    "click": [("click >= 8.0.0; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")],
-    "platformdirs": [("platformdirs >= 2; python_version == '3.6'", "platformdirs 2.5.1< dropped Python 3.6 support")],
-    "tomli": [("tomli>=1.1.0; python_version == '3.6'", "tomli 2.0.0+ dropped Python 3.6 support")],
+    "aiohttp": [
+        ("aiohttp>=3.7.4 ; python_version == '3.6'", "aiohttp 4.x requires Python 3.7+"),
+        ("aiohttp<4", "aiohttp 4+ breaks our test suite as @unittest_run_loop was deleted")
+    ],
+    "click": [("click>=8.0.0 ; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")],
+    "platformdirs": [("platformdirs>=2 ; python_version == '3.6'", "platformdirs 2.5.1< dropped Python 3.6 support")],
+    "tomli": [("tomli>=1.1.0 ; python_version == '3.6'", "tomli 2.0.0+ dropped Python 3.6 support")],
 }
 
 applicable_overrides = {}
 for pkg, values in overrides.items():
     parsed_pkg_overrides = [(Requirement(req), reason) for req, reason in values]
-    applicable_pkg_overrides = [(o, reason) for o, reason in parsed_pkg_overrides if o.marker.evaluate()]
-    assert len(applicable_pkg_overrides) <= 1, "at most one override should be applicable"
+    applicable_pkg_overrides = []
+    for o, reason in parsed_pkg_overrides:
+        if o.marker is None or o.marker.evaluate():
+            applicable_pkg_overrides.append((o, reason))
     if applicable_pkg_overrides:
         applicable_overrides[pkg] = applicable_pkg_overrides[0]
 
@@ -32,7 +38,7 @@ for req_file in SRC_DIR.iterdir():
         # Overrides only make sense for development requirements.
         if req.name in applicable_overrides and "dev" in req_file.name:
             override_req, reason = applicable_overrides[req.name]
-            print(f"  Applying {override_req!r} override\n    Reason -> '{reason}'") 
+            print(f"  Applying {override_req!r} override\n    Reason -> '{reason}'")
             final_reqs.append(str(override_req))
         else:
             final_reqs.append(raw_req)
