@@ -1,0 +1,1 @@
+colorama @ https://github.com/tartley/colorama/archive/master.zip

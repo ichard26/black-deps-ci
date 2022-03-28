@@ -1,0 +1,10 @@
+click @ https://github.com/pallets/click/archive/main.zip
+platformdirs @ git+https://github.com/platformdirs/platformdirs.git#egg=platformdirs
+tomli @ https://github.com/hukkin/tomli/archive/master.zip ; python_version < '3.11'
+typed-ast @ https://github.com/python/typed_ast/archive/master.zip ; python_version < '3.8' and implementation_name == 'cpython'
+pathspec @ git+https://github.com/cpburnz/python-path-specification.git#egg=pathspec
+dataclasses @ https://github.com/ericvsmith/dataclasses/archive/master.zip ; python_version < '3.7'
+# Their packaging setup is a bit unique so it's really annoying to install the development
+# version.
+typing_extensions >= 3.10.0.0 ; python_version < '3.10'
+mypy_extensions @ https://github.com/python/mypy_extensions/archive/master.zip

@@ -1,0 +1,2 @@
+ipython @ https://github.com/ipython/ipython/archive/master.zip
+tokenize-rt @ https://github.com/asottile/tokenize-rt/archive/main.zip

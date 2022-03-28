@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  # Run every Monday at 00:00 UTC.
+  schedule:
+    - cron: 0 0 * * MON
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: tests / ${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
+    env:
+      PYTHONIOENCODING: utf-8
+      FORCE_COLOR: 1
+      # aiohttp by defaults builds with Cython, but it's not marked as a build dep so we'll skip it.
+      AIOHTTP_NO_EXTENSIONS: 1
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        python: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        include:
+          - os: ubuntu
+            bin: 'bin'
+          - os: macos
+            bin: 'bin'
+          - os: windows
+            bin: 'Scripts'
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout mainline Black
+        uses: actions/checkout@v2
+        with:
+          repository: psf/black
+          path: "."
+          # setuptools-scm needs the commit (or tag?) history to be able to determine
+          # how a distribution should be versioned, and sadly I can't find a way to
+          # do a treeless or blobless clone with actions/checkout ._.
+          fetch-depth: 0
+
+      - name: Print debug information
+        run: git show HEAD --stat
+
+      # This MUST go after the initial clone of Black or else it would first clean this
+      # directory and this clone as well before cloning Black.
+      - name: Checkout this repository
+        uses: actions/checkout@v2
+        with:
+          path: .support
+
+      - name: Setup Python ${{ matrix.python }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Generate requirement files
+        run: pip install packaging && python .support/generate.py && cp .support/dist/* .
+
+      - name: Setup development version test environment
+        run: |
+          python -m venv venv
+          venv/${{ matrix.bin }}/pip install . --no-deps
+          venv/${{ matrix.bin }}/pip install -r dev-reqs.txt -r dev-d-reqs.txt -r dev-colorama-reqs.txt -r dev-test-reqs.txt
+
+      - name: Run test suite w/ development versions
+        run: |
+          venv/${{ matrix.bin }}/python -m pytest tests -v --run-optional no_jupyter
+          venv/${{ matrix.bin }}/pip install -r dev-jupyter-reqs.txt
+          venv/${{ matrix.bin }}/python -m pytest tests -v --run-optional jupyter -m jupyter
