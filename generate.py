@@ -6,17 +6,23 @@ THIS_DIR = Path(__file__).parent
 SRC_DIR = THIS_DIR / "src"
 DIST_DIR = THIS_DIR / "dist"
 
-overrides = {
-    "aiohttp": [
-        ("aiohttp>=3.7.4 ; python_version == '3.6'", "aiohttp 4.x requires Python 3.7+"),
-        ("aiohttp<4", "aiohttp 4+ breaks our test suite as @unittest_run_loop was deleted")
-    ],
-    "click": [("click>=8.0.0 ; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")],
-    "ipython": [("ipython>7.8.0 ; python_version <= '3.7'", "ipython 7.17+ dropped Python 3.6 and ipython 8+ dropped Python 3.7 support")],
-    "pytest": [("pytest>6.1.1 ; python_version == '3.6'", "pytest 7.1.0+ dropped Python 3.6 support")],
-    "platformdirs": [("platformdirs>=2 ; python_version == '3.6'", "platformdirs 2.5.1< dropped Python 3.6 support")],
-    "tomli": [("tomli>=1.1.0 ; python_version == '3.6'", "tomli 2.0.0+ dropped Python 3.6 support")],
-}
+overrides = {}
+overrides["aiohttp"] = [
+    ("aiohttp>=3.7.4 ; python_version == '3.6'", "aiohttp 4.x requires Python 3.7+"),
+    ("aiohttp<4", "aiohttp 4+ breaks our test suite as @unittest_run_loop was deleted"),
+]
+overrides["click"] = [("click>=8.0.0 ; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")]
+overrides["ipython"] = [
+    (
+        "ipython>7.8.0 ; python_version <= '3.7'",
+        "ipython 7.17+ dropped Python 3.6 and ipython 8+ dropped Python 3.7 support",
+    )
+]
+overrides["pytest"] = [("pytest>6.1.1 ; python_version == '3.6'", "pytest 7.1.0+ dropped Python 3.6 support")]
+overrides["platformdirs"] = [("platformdirs>=2 ; python_version == '3.6'", "platformdirs 2.5.1< dropped Python 3.6 support")]
+overrides["tokenize-rt"] = [("tokenize-rt>3.2.0 ; python_version == '3.6'", "tokenize-rt 4.2.1< dropped Python 3.6 support")]
+overrides["tomli"] = [("tomli>=1.1.0 ; python_version == '3.6'", "tomli 2.0.0+ dropped Python 3.6 support")]
+
 
 applicable_overrides = {}
 for pkg, values in overrides.items():
@@ -26,7 +32,7 @@ for pkg, values in overrides.items():
         if o.marker is None or o.marker.evaluate():
             applicable_pkg_overrides.append((o, reason))
     if applicable_pkg_overrides:
-        applicable_overrides[pkg] = applicable_pkg_overrides[0]
+        applicable_overrides[pkg] = applicable_pkg_overrides
 
 for req_file in SRC_DIR.iterdir():
     print(f"Generating {req_file.name}")
@@ -39,9 +45,9 @@ for req_file in SRC_DIR.iterdir():
         req = Requirement(raw_req)
         # Overrides only make sense for development requirements.
         if req.name in applicable_overrides and "dev" in req_file.name:
-            override_req, reason = applicable_overrides[req.name]
-            print(f"  Applying {override_req!r} override\n    Reason -> '{reason}'")
-            final_reqs.append(str(override_req))
+            for override_req, reason in applicable_overrides[req.name]:
+                print(f"  Applying {override_req!r} override\n    Reason -> '{reason}'")
+                final_reqs.append(str(override_req))
         else:
             final_reqs.append(raw_req)
 
