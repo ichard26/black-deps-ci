@@ -12,6 +12,7 @@ overrides = {
         ("aiohttp<4", "aiohttp 4+ breaks our test suite as @unittest_run_loop was deleted")
     ],
     "click": [("click>=8.0.0 ; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")],
+    "ipython": [("ipython>7.8.0 ; python_version <= '3.7'", "ipython 7.17+ dropped Python 3.6 and ipython 8+ dropped Python 3.7 support")],
     "pytest": [("pytest>6.1.1 ; python_version == '3.6'", "pytest 7.1.0+ dropped Python 3.6 support")],
     "platformdirs": [("platformdirs>=2 ; python_version == '3.6'", "platformdirs 2.5.1< dropped Python 3.6 support")],
     "tomli": [("tomli>=1.1.0 ; python_version == '3.6'", "tomli 2.0.0+ dropped Python 3.6 support")],
