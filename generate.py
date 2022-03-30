@@ -7,10 +7,7 @@ SRC_DIR = THIS_DIR / "src"
 DIST_DIR = THIS_DIR / "dist"
 
 overrides = {}
-overrides["aiohttp"] = [
-    ("aiohttp>=3.7.4 ; python_version == '3.6'", "aiohttp 4.x requires Python 3.7+"),
-    ("aiohttp<4", "aiohttp 4+ breaks our test suite as @unittest_run_loop was deleted"),
-]
+overrides["aiohttp"] = [("aiohttp>=3.7.4 ; python_version == '3.6'", "aiohttp 4.x requires Python 3.7+")]
 overrides["click"] = [("click>=8.0.0 ; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")]
 overrides["ipython"] = [
     (
@@ -35,7 +32,7 @@ for pkg, values in overrides.items():
         applicable_overrides[pkg] = applicable_pkg_overrides
 
 for req_file in SRC_DIR.iterdir():
-    print(f"Generating {req_file.name}")
+    print(f"[Generating {req_file.name}]")
     final_reqs = []
     for raw_req in req_file.read_text("utf-8").splitlines():
         if raw_req.startswith("#"):
