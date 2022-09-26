@@ -8,23 +8,14 @@ DIST_DIR = THIS_DIR / "dist"
 
 overrides = {}
 overrides["aiohttp"] = [
-    ("aiohttp>=3.7.4 ; python_version == '3.6'", "aiohttp 4.x requires Python 3.7+"),
     ("aiohttp>=3.7.4", "aiohttp 4.x deprecated @middleware")
 ]
-overrides["click"] = [("click>=8.0.0 ; python_version == '3.6'", "click 8.1.0+ dropped Python 3.6 support")]
-overrides["colorama"] = [("colorama>=0.4.3 ; python_version == '3.6'", "colorama 0.4.5< dropped Python 3.6 support")]
 overrides["ipython"] = [
     (
         "ipython>7.8.0 ; python_version <= '3.7'",
         "ipython 7.17+ dropped Python 3.6 and ipython 8+ dropped Python 3.7 support",
     )
 ]
-overrides["pathspec"] = [("pathspec>=0.9.0 ; python_version == '3.6'", "pathspec 0.9.0< dropped 3.6 supports")]
-overrides["pytest"] = [("pytest>6.1.1 ; python_version == '3.6'", "pytest 7.1.0+ dropped Python 3.6 support")]
-overrides["platformdirs"] = [("platformdirs>=2 ; python_version == '3.6'", "platformdirs 2.5.1< dropped Python 3.6 support")]
-overrides["tokenize-rt"] = [("tokenize-rt>3.2.0 ; python_version == '3.6'", "tokenize-rt 4.2.1< dropped Python 3.6 support")]
-overrides["tomli"] = [("tomli>=1.1.0 ; python_version == '3.6'", "tomli 2.0.0+ dropped Python 3.6 support")]
-
 
 applicable_overrides = {}
 for pkg, values in overrides.items():
